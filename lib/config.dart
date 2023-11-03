@@ -1,0 +1,4 @@
+const String ipfsKey =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEY4RDllNDY5M2FiOTc5QmEyMzFDNkExRDA0NWVlZjE4QjFBODhlRmYiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NDI1Mzk5MzI0MzksIm5hbWUiOiJmaWxlcyJ9.RuyB5HD5jn_xCl6pSJdNWJHUu_la07x0-SqWD_kfACE";
+const String walletConnectId =
+    'e9f3e234a4b76111891214acde3f9f35'; // 15faabd2ceb2a486be25c61d1b5a587a   /// e9f3e234a4b76111891214acde3f9f35

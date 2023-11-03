@@ -1,0 +1,29 @@
+class AppImages {
+  static String splinter = 'assets/images/splinter.png';
+  static String axie = 'assets/images/axie.png';
+  static String mobox = 'assets/images/sandbox.webp';
+  static String imgVideocam = 'assets/images/img_videocam.svg';
+  static String imgSearch = 'assets/images/img_search.svg';
+  static String aibot = 'assets/images/image_not_found.png';
+  static String newbg = 'assets/images/newbg.png';
+  static String logoname = 'assets/images/logoname.png';
+  static String metamask = 'assets/images/metamaskpng.png';
+  static String pubg = 'assets/images/pubg.png';
+  static String fortnite = 'assets/images/fortnite.png';
+  static String walletconnectpng = 'assets/images/walletconnectpng.png';
+  static String backgroundDra = 'assets/images/backgroundDra.png';
+  static String logopng = 'assets/images/logo.png';
+  static String success = 'assets/images/success.png';
+  static String gamingImage2 = 'assets/images/crCutter.png';
+  static String gamingImage3 = 'assets/images/gaming.png';
+  static String ntfSuccess = 'assets/images/spaning.png';
+  static String Vectorsvg = 'assets/images/Vector.svg';
+  static String noNft = 'assets/images/nft.svg';
+  static String searchSvg = 'assets/images/search.svg';
+  static String nftexport = 'assets/images/nftexport.svg';
+  static String uploadsvg = 'assets/images/uploadsvg.svg';
+  static String expandvctr = 'assets/images/Vector.png';
+  static String streamIcon = 'assets/images/streamIcon.png';
+  static String streamcomnts = 'assets/images/streamcomnts.png';
+  static String shape = 'assets/images/shape.png';
+}
