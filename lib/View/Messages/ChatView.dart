@@ -610,6 +610,8 @@ class _ChatViewState extends State<ChatView> {
                                                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                                                             children: [
                                                                                               CircularProgressIndicator(
+                                                                                                strokeWidth: 2,
+                                                                                                color: Colors.grey,
                                                                                                 value: downloadProgress.progress,
                                                                                               ),
                                                                                               const SizedBox(height: 8),
@@ -647,6 +649,8 @@ class _ChatViewState extends State<ChatView> {
                                                                               mainAxisAlignment: MainAxisAlignment.center,
                                                                               children: [
                                                                                 CircularProgressIndicator(
+                                                                                  strokeWidth: 2,
+                                                                                  color: Colors.grey,
                                                                                   value: downloadProgress.progress,
                                                                                 ),
                                                                                 const SizedBox(height: 8),
@@ -857,6 +861,8 @@ class _ChatViewState extends State<ChatView> {
                                                                                               mainAxisAlignment: MainAxisAlignment.center,
                                                                                               children: [
                                                                                                 CircularProgressIndicator(
+                                                                                                  strokeWidth: 2,
+                                                                                                  color: Colors.grey,
                                                                                                   value: downloadProgress.progress,
                                                                                                 ),
                                                                                                 const SizedBox(height: 8),
@@ -893,6 +899,8 @@ class _ChatViewState extends State<ChatView> {
                                                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                                                 children: [
                                                                                   CircularProgressIndicator(
+                                                                                    strokeWidth: 2,
+                                                                                    color: Colors.grey,
                                                                                     value: downloadProgress.progress,
                                                                                   ),
                                                                                   const SizedBox(height: 8),

@@ -73,6 +73,8 @@ class SavedLives extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.grey,
                         value: downloadProgress.progress,
                       ),
                       const SizedBox(height: 8),

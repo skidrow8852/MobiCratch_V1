@@ -1145,6 +1145,8 @@ class _ContentViewState extends State<ContentView>
                                                                                       mainAxisAlignment: MainAxisAlignment.center,
                                                                                       children: [
                                                                                         CircularProgressIndicator(
+                                                                                          strokeWidth: 2,
+                                                                                          color: Colors.grey,
                                                                                           value: downloadProgress.progress,
                                                                                         ),
                                                                                         const SizedBox(height: 8),
@@ -1406,6 +1408,8 @@ class _ContentViewState extends State<ContentView>
                                                                                           children: [
                                                                                             CircularProgressIndicator(
                                                                                               value: downloadProgress.progress,
+                                                                                              strokeWidth: 2,
+                                                                                              color: Colors.grey,
                                                                                             ),
                                                                                             const SizedBox(height: 8),
                                                                                             Text(
@@ -1496,6 +1500,8 @@ class _ContentViewState extends State<ContentView>
                                                                                                 children: [
                                                                                                   CircularProgressIndicator(
                                                                                                     value: downloadProgress.progress,
+                                                                                                    strokeWidth: 2,
+                                                                                                    color: Colors.grey,
                                                                                                   ),
                                                                                                   const SizedBox(height: 8),
                                                                                                   Text(

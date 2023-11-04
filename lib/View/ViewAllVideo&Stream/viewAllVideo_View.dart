@@ -66,7 +66,7 @@ class _AllVideoViewState extends State<AllVideoView> {
     );
     if (response.statusCode == 200) {
       final lives = jsonDecode(response.body);
-
+      await getSessions();
       final mergedList = [...lives, ...session];
       userVideos.addAll(mergedList);
 
@@ -92,6 +92,7 @@ class _AllVideoViewState extends State<AllVideoView> {
       Uri.parse('https://account.cratch.io/api/video/all/$skip/$limit'),
       headers: {'Authorization': 'Bearer $token'},
     );
+    await getSessions();
     if (response.statusCode == 200) {
       final lives = jsonDecode(response.body);
       setState(() {
@@ -111,7 +112,6 @@ class _AllVideoViewState extends State<AllVideoView> {
   @override
   void initState() {
     super.initState();
-    getSessions();
     fetchLives().then((li) {
       if (mounted) {
         setState(() {
