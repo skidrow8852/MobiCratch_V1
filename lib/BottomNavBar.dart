@@ -75,7 +75,7 @@ class _DrawerWithNavBarState extends State<DrawerWithNavBar> {
       child: ZoomDrawer(
         menuBackgroundColor: const Color(0xFF17062F),
         drawerShadowsBackgroundColor: const Color(0xFF17062F),
-
+        disableDragGesture: true,
         borderRadius: 24,
         clipMainScreen: true,
         mainScreenTapClose: true,
@@ -89,7 +89,17 @@ class _DrawerWithNavBarState extends State<DrawerWithNavBar> {
         angle: 0.0,
         shadowLayer2Color: const Color(0xff191639),
         shadowLayer1Color: const Color(0xff100E29),
-        mainScreen: widget.screen,
+        mainScreen: WillPopScope(
+          onWillPop: () async {
+            bool handledNavigator = false;
+
+            if (await Navigator.maybePop(context)) {
+              handledNavigator = true;
+            }
+            return handledNavigator;
+          },
+          child: widget.screen,
+        ),
         menuScreen: Theme(
           data: ThemeData.dark(),
           child: Scaffold(

@@ -5,6 +5,7 @@ import 'package:cratch/BottomNavBar.dart';
 import 'package:cratch/Provider/Contract_factory_provider.dart';
 import 'package:cratch/config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cratch/Utils/app_style.dart';
 import 'package:cratch/Utils/color_constant.dart';
@@ -17,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/GradientTextWidget.dart';
 import '../../widgets/customButton.dart';
 import 'package:cratch/widgets/LoginView/modal.dart';
@@ -34,6 +36,7 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   bool _isModalVisible = false;
+  bool _isLoading = false;
   // ignore: prefer_typing_uninitialized_variables
   var _Appuri, _session, signClient, response;
 
@@ -195,7 +198,6 @@ class _LoginViewState extends State<LoginView> {
           return;
         }
       } else {
-        /// the code logic, redirect to home page
         Get.to(() => const DashBoardScreen());
         return;
       }
@@ -205,6 +207,9 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> getToken(String wallet, String? publicKey, String? topic) async {
+    setState(() {
+      _isLoading = true;
+    });
     const url =
         'https://account.cratch.io/api'; // Replace with your actual API URL
 
@@ -222,6 +227,9 @@ class _LoginViewState extends State<LoginView> {
           .containsKey('token')) {
         await _storeWalletAddress(wallet.toLowerCase(), result['token'] ?? "");
         await handleUser(wallet.toLowerCase(), result['token'] ?? "");
+        setState(() {
+          _isLoading = false;
+        });
       } else {
         /// the code logic, redirect to home page
         showTopSnackBar(
@@ -248,9 +256,15 @@ class _LoginViewState extends State<LoginView> {
                 message: "Ooops, There was an Error",
               ),
             ));
+        setState(() {
+          _isLoading = false;
+        });
         return;
       }
     } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
       print(error);
     }
   }
@@ -284,7 +298,7 @@ class _LoginViewState extends State<LoginView> {
   getUri() async {
     response = await signClient.connect(requiredNamespaces: {
       'eip155': const RequiredNamespace(
-          chains: ['eip155:56'], //
+          chains: ['eip155:361'], //
           methods: ['personal_sign'], //
           events: []),
     });
@@ -293,42 +307,54 @@ class _LoginViewState extends State<LoginView> {
     _Appuri = uri.toString();
   }
 
+  void handleException(BuildContext context, dynamic e) {
+    if (e is PlatformException && e.code == 'ACTIVITY_NOT_FOUND') {
+      // Handle the specific exception
+      showMetaMaskWarning(context);
+    } else {
+      // Handle other exceptions
+      print(e);
+      // Handle other exceptions as needed, e.g., show a generic error message
+    }
+  }
+
   launchWithMetamask(BuildContext context) async {
-    await getUri();
-    await launchUrlString(_Appuri, mode: LaunchMode.externalApplication);
+    try {
+      await getUri();
+      await launchUrlString(_Appuri, mode: LaunchMode.externalApplication);
 
-    _session = await response.session.future;
-    final sess = Provider.of<ContractFactory>(context, listen: false);
-    sess.setSession(_session);
+      _session = await response.session.future;
+      final sess = Provider.of<ContractFactory>(context, listen: false);
+      sess.setSession(_session);
 
-    signClient.onSessionConnect.subscribe((SessionConnect? session) {
-      if (session != null) {
-        String consoleOutput = session.toString();
-        RegExp publicKeyRegex = RegExp(r'publicKey: ([a-fA-F0-9]+)');
-        RegExp topicRegex = RegExp(r'topic: ([a-fA-F0-9]+)');
+      signClient.onSessionConnect.subscribe((SessionConnect? session) {
+        if (session != null) {
+          String consoleOutput = session.toString();
+          RegExp publicKeyRegex = RegExp(r'publicKey: ([a-fA-F0-9]+)');
+          RegExp topicRegex = RegExp(r'topic: ([a-fA-F0-9]+)');
 
-// Extract publicKey
-        String? publicKey = publicKeyRegex.firstMatch(consoleOutput)?.group(1);
+          // Extract publicKey
+          String? publicKey =
+              publicKeyRegex.firstMatch(consoleOutput)?.group(1);
 
-// Extract topic
-        String? topic = topicRegex.firstMatch(consoleOutput)?.group(1);
-        // String controllerValue =
-        //     consoleOutput.split("controller: ")[1].split(",")[0];
-        String accountsSection =
-            consoleOutput.split("accounts: [")[1].split("]")[0];
-        List<String> accounts = accountsSection.split(", ");
+          // Extract topic
+          String? topic = topicRegex.firstMatch(consoleOutput)?.group(1);
 
-        String firstAccountAddress =
-            accounts[0].split(":")[2].replaceAll("'", "");
+          String accountsSection =
+              consoleOutput.split("accounts: [")[1].split("]")[0];
+          List<String> accounts = accountsSection.split(", ");
 
-        // print(controllerValue);
-        if (firstAccountAddress.length > 2) {
-          getToken(firstAccountAddress, publicKey, topic);
+          String firstAccountAddress =
+              accounts[0].split(":")[2].replaceAll("'", "");
+
+          if (firstAccountAddress.length > 2) {
+            getToken(firstAccountAddress, publicKey, topic);
+          }
         }
-
-        // debugPrint(session.toString());
-      }
-    });
+      });
+    } catch (e) {
+      handleException(context, e);
+    }
   }
 
   launchWithWalletConnect(BuildContext context) async {
@@ -367,6 +393,20 @@ class _LoginViewState extends State<LoginView> {
         }
       }
     });
+  }
+
+  void showMetaMaskWarning(BuildContext context) async {
+    showTopSnackBar(
+      Overlay.of(context),
+      CustomSnackBar.error(
+        backgroundColor: const Color(0xFF532B48),
+        borderRadius: BorderRadius.circular(5),
+        iconPositionLeft: 12,
+        iconRotationAngle: 0,
+        message:
+            "MetaMask is not installed. Please download MetaMask from the Google Play Store.",
+      ),
+    );
   }
 
   @override
@@ -473,7 +513,26 @@ class _LoginViewState extends State<LoginView> {
                     uri: _Appuri,
                   ),
                 ),
-              )
+              ),
+            if (_isLoading) // Conditionally show the loading indicator
+              Stack(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.black
+                        .withOpacity(0.5), // Semi-transparent black background
+                  ),
+                  const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.blue), // Blue color for the loader
+                    ),
+                  ),
+                  // Your existing content
+                  // ...
+                ],
+              ),
           ],
         ),
       ),
