@@ -287,8 +287,11 @@ class _MessagesViewState extends State<MessagesView> {
 
           var lastMessageTime = "👋";
           var message = "Hi there! let's chat"; // Default message
-          var conv = data.firstWhere((obj) => obj['to'] == dats['userId'],
-              orElse: () => null);
+
+          var conv = data is! Map
+              ? data.firstWhere((obj) => obj['to'] == dats['userId'],
+                  orElse: () => null)
+              : null;
           if (conv != null && conv['from'] == wallet.toLowerCase()) {
             message = conv['last_message'];
             lastMessageTime = conv['last_time_message'];
