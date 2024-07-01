@@ -191,8 +191,9 @@ class _DashBoardViewState extends State<DashBoardView> {
   Future<List<dynamic>> fetchVideos() async {
     final prefs = await SharedPreferences.getInstance();
     var tokena = prefs.getString('token') ?? '';
+    var address = prefs.getString('wallet_address') ?? '';
     final response = await http.get(
-      Uri.parse('https://account.cratch.io/api/video/home/videos/8'),
+      Uri.parse('https://account.cratch.io/api/video/home/videos/8/$address'),
       headers: {'Authorization': 'Bearer $tokena'},
     );
 

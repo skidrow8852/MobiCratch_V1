@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cratch/Provider/Avatar_provider.dart';
 import 'package:cratch/Provider/notifications_provider.dart';
 import 'package:cratch/View/Search/Search_View.dart';
 import 'package:http/http.dart' as http;
@@ -44,9 +45,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
   int unreadCount = 0;
 
   void initializeSocket(String serverHost, String wallet) async {
-    socket = IO.io(serverHost, <String, dynamic>{
-      'transports': ['websocket', 'polling'],
-    });
+    final prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token') ?? '';
+
+    socket = IO.io(
+      serverHost,
+      IO.OptionBuilder().setTransports(['websocket', 'polling']).setQuery(
+          {'token': token}).build(),
+    );
 
     socket?.on('notif', (data) {
       if (data['to'].toLowerCase() == wallet.toLowerCase()) {
@@ -81,20 +87,16 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
         final userData = jsonDecode(response.body);
         if (response.statusCode == 200) {
-          alluserData = userData["ProfileAvatar"];
-          await prefs.setString('avatar', alluserData);
+          await prefs.setString('avatar', userData['ProfileAvatar']);
           await prefs.setString('userId', userData['_id']);
-          setState(() {
-            alluserData = userData["ProfileAvatar"];
-          });
+          final avatarstate =
+              Provider.of<AvatarProvider>(context, listen: false);
+          avatarstate.setAvatar(userData['ProfileAvatar'] ?? "");
           getNotif(address ?? "", token ?? "");
         }
       } else {
-        alluserData = prefs.getString('avatar') ?? "";
-
-        setState(() {
-          alluserData = prefs.getString('avatar') ?? "";
-        });
+        final avatarstate = Provider.of<AvatarProvider>(context, listen: false);
+        avatarstate.setAvatar(prefs.getString('avatar') ?? "");
 
         getNotif(address ?? "", token ?? "");
       }
@@ -137,13 +139,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
     getUserData();
     SharedPreferences.getInstance().then((prefs) {
       String? address = prefs.getString('wallet_address');
-      initializeSocket("https://account.cratch.io", address ?? "");
+      initializeSocket("https://account.cratch.io/", address ?? "");
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final notificationState = Provider.of<NotificationProvider>(context);
+    final avatarstate = Provider.of<AvatarProvider>(context);
     return Row(
       children: [
         Padding(
@@ -289,7 +292,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 child: CircleAvatar(
                   radius: 20.0,
                   backgroundImage: NetworkImage(
-                    alluserData,
+                    avatarstate.avatar,
                   ),
                 ),
               ),

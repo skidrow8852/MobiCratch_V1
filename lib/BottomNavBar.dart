@@ -176,6 +176,7 @@ class _DrawerWithNavBarState extends State<DrawerWithNavBar> {
                             prefs.remove('token');
                             prefs.remove('wallet_address');
                             prefs.remove('userId');
+                            prefs.remove('avatar');
                             offline();
                             Get.to(() => const LoginView());
                           },
@@ -266,9 +267,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   }
 
   void initializeSocket(String serverHost) async {
-    socket = IO.io(serverHost, <String, dynamic>{
-      'transports': ['websocket', 'polling'],
-    });
+    final prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token') ?? '';
+
+    socket = IO.io(
+      serverHost,
+      IO.OptionBuilder().setTransports(['websocket', 'polling']).setQuery(
+          {'token': token}).build(),
+    );
 
     socket?.on('last-chat', (data) {
       try {
@@ -305,7 +311,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     super.initState();
     checkForUpdate();
     getMessages();
-    initializeSocket("https://account.cratch.io");
+    initializeSocket("https://account.cratch.io/");
   }
 
   void checkForUpdate() async {

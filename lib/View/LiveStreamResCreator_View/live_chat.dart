@@ -90,9 +90,14 @@ class _StreamCmntsRow3State extends State<LiveChatRoom> {
   }
 
   void initializeSocket(String serverHost) async {
-    socket = IO.io(serverHost, <String, dynamic>{
-      'transports': ['websocket', 'polling'],
-    });
+    final prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token') ?? '';
+
+    socket = IO.io(
+      serverHost,
+      IO.OptionBuilder().setTransports(['websocket', 'polling']).setQuery(
+          {'token': token}).build(),
+    );
 
     socket?.on('live-chat-sent', (data) {
       if (data['liveId'] == widget.videoId) {
@@ -107,7 +112,7 @@ class _StreamCmntsRow3State extends State<LiveChatRoom> {
   void initState() {
     super.initState();
     getAllComments();
-    initializeSocket("https://account.cratch.io");
+    initializeSocket("https://account.cratch.io/");
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });

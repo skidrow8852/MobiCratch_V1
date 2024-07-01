@@ -222,7 +222,7 @@ class _FollowersState extends State<Followers> {
                                       CustomText(
                                           textStyle: AppStyle
                                               .textStyle11SemiBoldWhite400,
-                                          title: "${allUsers.length}"),
+                                          title: "+"),
                                     ],
                                   ),
                                 ),

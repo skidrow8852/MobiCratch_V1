@@ -157,9 +157,14 @@ class _MessagesViewState extends State<MessagesView> {
   }
 
   void initializeSocket(String serverHost) async {
-    socket = IO.io(serverHost, <String, dynamic>{
-      'transports': ['websocket', 'polling'],
-    });
+    final prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token') ?? '';
+
+    socket = IO.io(
+      serverHost,
+      IO.OptionBuilder().setTransports(['websocket', 'polling']).setQuery(
+          {'token': token}).build(),
+    );
 
     socket?.on('last-chat', (data) {
       try {
@@ -194,7 +199,7 @@ class _MessagesViewState extends State<MessagesView> {
   void initState() {
     super.initState();
     getMessages();
-    initializeSocket("https://account.cratch.io");
+    initializeSocket("https://account.cratch.io/");
   }
 
   Future<void> getMessages() async {

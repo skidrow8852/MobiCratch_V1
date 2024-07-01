@@ -73,7 +73,8 @@ class _ContentViewState extends State<ContentView>
       var userId = prefs.getString('userId') ?? '';
       var wallet = prefs.getString('wallet_address') ?? '';
       final response1 = await http.get(
-        Uri.parse('https://account.cratch.io/api/video/user/$userId/$wallet'),
+        Uri.parse(
+            'https://account.cratch.io/api/video/user/profile/$userId/$wallet'),
         headers: {'Authorization': 'Bearer $token'},
       );
 

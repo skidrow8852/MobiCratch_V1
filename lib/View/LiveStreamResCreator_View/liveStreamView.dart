@@ -41,6 +41,8 @@ class _LiveStreamViewAndCommentsState extends State<LiveStreamViewAndComments>
   String message = "";
   late ChewieController _chewieController;
   late VideoPlayerController _videoPlayerController;
+  DateTime startTime = DateTime.now();
+  Duration watchTime = Duration.zero;
 
   @override
   void initState() {
@@ -53,16 +55,46 @@ class _LiveStreamViewAndCommentsState extends State<LiveStreamViewAndComments>
     try {
       _videoPlayerController = VideoPlayerController.network(path);
       _chewieController = ChewieController(
-          videoPlayerController: _videoPlayerController,
-          autoPlay: true,
-          looping: false,
-          aspectRatio: 16 / 9
-          // other customization options
-          );
+        videoPlayerController: _videoPlayerController,
+        autoPlay: true,
+        looping: false,
+        aspectRatio: 16 / 9,
+        // other customization options
+      );
+
+      startTime = DateTime.now();
+      _videoPlayerController.addListener(_onVideoProgress);
     } catch (e) {
       // ignore: avoid_print
       print('Error initializing ChewieController: $e');
       // Handle the error gracefully, e.g., show an error message or fallback UI
+    }
+  }
+
+  Future<void> saveDocument() async {
+    try {
+      if (watchTime.inSeconds > 5) {
+        final prefs = await SharedPreferences.getInstance();
+        var token = prefs.getString('token') ?? '';
+        var wallet = prefs.getString('wallet_address') ?? '';
+
+        await http.post(
+            Uri.parse('https://account.cratch.io/api/analytics/add'),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+              'Connection': 'keep-alive'
+            },
+            body: json.encode({
+              'videoCreator': widget.live['creator']['_id'],
+              'viewerId': wallet,
+              'watchtime': watchTime,
+              'liveId': widget.live['_id']
+            }));
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print(e);
     }
   }
 
@@ -73,8 +105,17 @@ class _LiveStreamViewAndCommentsState extends State<LiveStreamViewAndComments>
     _chewieController.dispose(); // Dispose of the Chewie controller first
     _videoPlayerController
         .dispose(); // Then dispose of the VideoPlayerController
-
+    saveDocument();
     super.dispose();
+  }
+
+  void _onVideoProgress() {
+    if (_videoPlayerController.value.isPlaying) {
+      Duration currentTime = _videoPlayerController.value.position;
+      setState(() {
+        watchTime = currentTime - _videoPlayerController.value.duration;
+      });
+    }
   }
 
   Future<void> addview() async {

@@ -3,7 +3,7 @@ description: The Future of Content Creation.
 
 publish_to: "https://cratch.io" # Remove this line if you wish to publish to pub.dev
 
-version: 1.1.7+17
+version: 1.2.1+21
 
 environment:
   sdk: ">=2.19.6 <=3.1.0"
@@ -34,6 +34,8 @@ dependencies:
   jwt_decoder:
   image:
   video_thumbnail:
+  web_socket_channel:
+  web3dart:
   shimmer:
   flutter_ffmpeg:
   chewie: ^1.7.0

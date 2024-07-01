@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:cratch/BottomNavBar.dart';
+import 'package:cratch/Provider/Contract_factory_provider.dart';
 import 'package:cratch/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +12,7 @@ import 'package:cratch/Utils/image_constant.dart';
 import 'package:cratch/widgets/Sizebox/sizedboxheight.dart';
 import 'package:cratch/widgets/customtext.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -296,6 +298,8 @@ class _LoginViewState extends State<LoginView> {
     await launchUrlString(_Appuri, mode: LaunchMode.externalApplication);
 
     _session = await response.session.future;
+    final sess = Provider.of<ContractFactory>(context, listen: false);
+    sess.setSession(_session);
 
     signClient.onSessionConnect.subscribe((SessionConnect? session) {
       if (session != null) {
@@ -334,6 +338,8 @@ class _LoginViewState extends State<LoginView> {
     _session = await response.session.future;
 
     if (_session != null) _toggleModalVisibility();
+    final sess = Provider.of<ContractFactory>(context, listen: false);
+    sess.setSession(_session);
 
     signClient.onSessionConnect.subscribe((SessionConnect? session) {
       if (session != null) {

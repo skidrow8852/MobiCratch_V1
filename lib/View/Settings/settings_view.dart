@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cratch/Provider/Avatar_provider.dart';
 import 'package:cratch/Utils/image_constant.dart';
 import 'package:cratch/View/TopBar/TopBar.dart';
 import 'package:cratch/widgets/custom_icon_button.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cratch/BottomNavBar.dart';
 import 'package:cratch/widgets/Sizebox/sizedboxheight.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -81,7 +83,7 @@ class _SettingsViewState extends State<SettingsView> {
           final responseJson = json.decode(responseBody);
           setState(() {
             avatar =
-                "https://account.cratch.io/uploads/${responseJson["fileName"].toString()}";
+                "https://account.cratch.io/uploads/images/${responseJson["fileName"].toString()}";
           });
         }
       }
@@ -101,7 +103,7 @@ class _SettingsViewState extends State<SettingsView> {
           final responseJson = json.decode(responseBody);
           setState(() {
             cover =
-                "https://account.cratch.io/uploads/${responseJson["fileName"].toString()}";
+                "https://account.cratch.io/uploads/images/${responseJson["fileName"].toString()}";
           });
         }
       }
@@ -232,8 +234,11 @@ class _SettingsViewState extends State<SettingsView> {
             ),
           );
 
-          if (data['ProfileAvatar'] != null) {
-            prefs.setString('avatar', data['ProfileAvatar'].toString());
+          if (avatar.isNotEmpty) {
+            final avatarstate =
+                Provider.of<AvatarProvider>(context, listen: false);
+            avatarstate.setAvatar(avatar);
+            prefs.setString('avatar', avatar);
           }
           setState(() {
             alluserData['username'] = username;
@@ -385,7 +390,6 @@ class _SettingsViewState extends State<SettingsView> {
                                           radius: 40.r,
                                           backgroundColor:
                                               const Color(0xFFFFFFFF),
-                                          // backgroundImage: AssetImage(AppImages.imgEllipse35),
                                           child: ClipOval(
                                             child: imageAvatar != null
                                                 ? Image.file(

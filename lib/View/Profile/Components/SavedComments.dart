@@ -56,6 +56,8 @@ class _StreamCommentsState extends State<SavedComments> {
 
   late ChewieController _chewieController;
   late VideoPlayerController _videoPlayerController;
+  DateTime startTime = DateTime.now();
+  Duration watchTime = Duration.zero;
   Map<String, dynamic> allVideoData = {};
 
   Future<void> getAllComments(String token, String wallet) async {
@@ -116,7 +118,7 @@ class _StreamCommentsState extends State<SavedComments> {
     _chewieController.dispose(); // Dispose of the Chewie controller first
     _videoPlayerController
         .dispose(); // Then dispose of the VideoPlayerController
-
+    saveDocument();
     super.dispose();
   }
 
@@ -171,6 +173,42 @@ class _StreamCommentsState extends State<SavedComments> {
     }
   }
 
+  Future<void> saveDocument() async {
+    try {
+      if (watchTime.inSeconds > 5) {
+        final prefs = await SharedPreferences.getInstance();
+        var token = prefs.getString('token') ?? '';
+        var wallet = prefs.getString('wallet_address') ?? '';
+
+        await http.post(
+            Uri.parse('https://account.cratch.io/api/analytics/add'),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+              'Connection': 'keep-alive'
+            },
+            body: json.encode({
+              'videoCreator': allVideoData['creator']['_id'],
+              'viewerId': wallet,
+              'watchtime': watchTime,
+              'sessionId': allVideoData['_id']
+            }));
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print(e);
+    }
+  }
+
+  void _onVideoProgress() {
+    if (_videoPlayerController.value.isPlaying) {
+      Duration currentTime = _videoPlayerController.value.position;
+      setState(() {
+        watchTime = currentTime - _videoPlayerController.value.duration;
+      });
+    }
+  }
+
   void _initializeVideoPlayer(String path) {
     try {
       final videoPlayerController = VideoPlayerController.network(path);
@@ -181,6 +219,9 @@ class _StreamCommentsState extends State<SavedComments> {
           aspectRatio: 16 / 9
           // other customization options
           );
+
+      startTime = DateTime.now();
+      _videoPlayerController.addListener(_onVideoProgress);
     } catch (e) {
       // ignore: avoid_print
       print('Error initializing ChewieController: $e');

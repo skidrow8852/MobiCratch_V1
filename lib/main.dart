@@ -1,3 +1,5 @@
+import 'package:cratch/Provider/Avatar_provider.dart';
+import 'package:cratch/Provider/Contract_factory_provider.dart';
 import 'package:cratch/Provider/EditNfts_provider.dart';
 import 'package:cratch/Provider/favorites_provider.dart';
 import 'package:cratch/Provider/uploadVideo.provider.dart';
@@ -50,6 +52,8 @@ class _MyAppState extends State<MyApp> {
       builder: (BuildContext context, Widget? child) {
         return MultiProvider(
           providers: [
+            ChangeNotifierProvider(create: (_) => ContractFactory()),
+            ChangeNotifierProvider(create: (_) => AvatarProvider()),
             ChangeNotifierProvider(create: (_) => UploadVideoProvider()),
             ChangeNotifierProvider(create: (_) => EditNftsProvider()),
             ChangeNotifierProvider(create: (_) => FavoritesProvider()),
