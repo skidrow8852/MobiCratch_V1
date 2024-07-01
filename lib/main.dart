@@ -2,7 +2,8 @@ import 'package:cratch/Provider/Avatar_provider.dart';
 import 'package:cratch/Provider/Contract_factory_provider.dart';
 import 'package:cratch/Provider/EditNfts_provider.dart';
 import 'package:cratch/Provider/favorites_provider.dart';
-import 'package:cratch/Provider/uploadVideo.provider.dart';
+import 'package:cratch/Provider/uploadVideo_provider.dart';
+import 'package:cratch/Provider/following_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -54,6 +55,7 @@ class _MyAppState extends State<MyApp> {
           providers: [
             ChangeNotifierProvider(create: (_) => ContractFactory()),
             ChangeNotifierProvider(create: (_) => AvatarProvider()),
+            ChangeNotifierProvider(create: (_) => FollowingProvider()),
             ChangeNotifierProvider(create: (_) => UploadVideoProvider()),
             ChangeNotifierProvider(create: (_) => EditNftsProvider()),
             ChangeNotifierProvider(create: (_) => FavoritesProvider()),

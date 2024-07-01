@@ -262,10 +262,10 @@ class _FollowersState extends State<Followers> {
                                                       itemBuilder:
                                                           (context, index) {
                                                         return FollowersList(
-                                                          user: allFollowers[
-                                                              index],
-                                                          token: token,
-                                                        );
+                                                            user: allFollowers[
+                                                                index],
+                                                            token: token,
+                                                            wallet: wallet);
                                                       })),
                                             ],
                                           ),
@@ -281,11 +281,11 @@ class _FollowersState extends State<Followers> {
                                                       itemBuilder:
                                                           (context, index) {
                                                         return FollowersList(
-                                                          user:
-                                                              allFollowersOnline[
-                                                                  index],
-                                                          token: token,
-                                                        );
+                                                            user:
+                                                                allFollowersOnline[
+                                                                    index],
+                                                            token: token,
+                                                            wallet: wallet);
                                                       })),
                                             ],
                                           ),
@@ -300,9 +300,10 @@ class _FollowersState extends State<Followers> {
                                                       itemBuilder:
                                                           (context, index) {
                                                         return FollowersList(
-                                                          user: allUsers[index],
-                                                          token: token,
-                                                        );
+                                                            user:
+                                                                allUsers[index],
+                                                            token: token,
+                                                            wallet: wallet);
                                                       })),
                                             ],
                                           ),

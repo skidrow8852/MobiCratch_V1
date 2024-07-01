@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cratch/Provider/uploadVideo.provider.dart';
+import 'package:cratch/Provider/uploadVideo_provider.dart';
 import 'package:cratch/config.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';

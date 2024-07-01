@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:cratch/BottomNavBar.dart';
-import 'package:cratch/Provider/uploadVideo.provider.dart';
+import 'package:cratch/Provider/uploadVideo_provider.dart';
 import 'package:cratch/View/TopBar/TopBar.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';

@@ -1,3 +1,4 @@
+import 'package:cratch/Provider/following_provider.dart';
 import 'package:cratch/View/Messages/ChatView.dart';
 import 'package:cratch/View/Profile/profile_view.dart';
 import 'package:flutter/material.dart';
@@ -6,25 +7,63 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cratch/Utils/image_constant.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
 import '../../../Utils/app_style.dart';
 import '../../../widgets/Sizebox/sizedboxheight.dart';
 import '../../../widgets/Sizebox/sizedboxwidth.dart';
 import '../../../widgets/customtext.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 // ignore: must_be_immutable
 class FollowersList extends StatelessWidget {
   dynamic user;
 
   final String token;
+  final String wallet;
 
   FollowersList({
     Key? key,
     required this.user,
     required this.token,
+    required this.wallet,
   }) : super(key: key);
+
+  Future<void> followUser(String userWallet, String userDataWallet) async {
+    try {
+      await http.put(
+          Uri.parse(
+              'https://account.cratch.io/api/users/follow/${userDataWallet.toLowerCase()}'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive',
+          },
+          body: json.encode({"value": userWallet.toLowerCase()}));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> unfollowUser(String userWallet, String userDataWallet) async {
+    try {
+      await http.put(
+          Uri.parse(
+              'https://account.cratch.io/api/users/unfollow/${userDataWallet.toLowerCase()}'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive',
+          },
+          body: json.encode({"value": userWallet.toLowerCase()}));
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final followingsState = Provider.of<FollowingProvider>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(
           vertical: 8.0), // Adjust the vertical padding value as needed
@@ -97,25 +136,50 @@ class FollowersList extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                height: 40.h,
-                width: 40.w,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xff2B59FE),
-                      Color(0xff3485FF),
-                    ],
+                  height: 40.h,
+                  width: 40.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors:
+                          followingsState.followings.contains(user['userId'])
+                              ? const [
+                                  Color.fromARGB(255, 24, 186, 255),
+                                  Color.fromRGBO(174, 81, 255, 1),
+                                ]
+                              : const [
+                                  Color(0xff2B59FE),
+                                  Color(0xff3485FF),
+                                ],
+                    ),
                   ),
-                ),
-                child: Icon(
-                  Icons.person_add,
-                  color: Colors.white,
-                  size: 22.w,
-                ),
-              ),
+                  child: followingsState.followings.contains(user['userId'])
+                      ? IconButton(
+                          onPressed: () async {
+                            followingsState.removeFollowings(user['userId']);
+                            await unfollowUser(wallet.toLowerCase(),
+                                user['userId'].toLowerCase());
+                          },
+                          icon: Icon(
+                            Icons.person_2_outlined,
+                            color: Colors.white,
+                            size: 22.w,
+                          ),
+                        )
+                      : IconButton(
+                          onPressed: () async {
+                            followingsState.addFollowings(user['userId']);
+                            await followUser(wallet.toLowerCase(),
+                                user['userId'].toLowerCase());
+                          },
+                          icon: Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                            size: 22.w,
+                          ),
+                        )),
               CustomSizedBoxWidth(width: 10.w),
               Container(
                 height: 40.h,

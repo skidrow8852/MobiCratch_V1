@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:cratch/Provider/following_provider.dart';
 import 'package:cratch/View/Messages/ChatView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cratch/Utils/app_style.dart';
 import 'package:cratch/widgets/Sizebox/sizedboxheight.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Utils/color_constant.dart';
@@ -61,12 +63,16 @@ class _RoundButtonProfileState extends State<RoundButtonProfile> {
     isFollow();
   }
 
-  Future<void> followUser(String userWallet, String userDataWallet) async {
+  Future<void> followUser(
+      String userWallet, String userDataWallet, BuildContext context) async {
     try {
+      final followingsState =
+          Provider.of<FollowingProvider>(context, listen: false);
       if (isFollowing == false) {
         setState(() {
           isFollowing = true;
         });
+        followingsState.addFollowings(userDataWallet);
         await http.put(
             Uri.parse(
                 'https://account.cratch.io/api/users/follow/${userDataWallet.toLowerCase()}'),
@@ -80,6 +86,7 @@ class _RoundButtonProfileState extends State<RoundButtonProfile> {
         setState(() {
           isFollowing = false;
         });
+        followingsState.removeFollowings(userDataWallet);
         await http.put(
             Uri.parse(
                 'https://account.cratch.io/api/users/unfollow/${userDataWallet.toLowerCase()}'),
@@ -158,8 +165,10 @@ class _RoundButtonProfileState extends State<RoundButtonProfile> {
                   children: [
                     IconButtonWidget(
                         ontap: () async {
-                          await followUser(widget.address.toLowerCase(),
-                              widget.alluserData['userId'].toLowerCase());
+                          await followUser(
+                              widget.address.toLowerCase(),
+                              widget.alluserData['userId'].toLowerCase(),
+                              context);
                         },
                         height: 50,
                         width: 50,

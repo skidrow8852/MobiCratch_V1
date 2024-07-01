@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cratch/Provider/Avatar_provider.dart';
+import 'package:cratch/Provider/following_provider.dart';
 import 'package:cratch/Provider/notifications_provider.dart';
 import 'package:cratch/View/Search/Search_View.dart';
 import 'package:http/http.dart' as http;
@@ -92,13 +93,29 @@ class _CustomAppBarState extends State<CustomAppBar> {
           final avatarstate =
               Provider.of<AvatarProvider>(context, listen: false);
           avatarstate.setAvatar(userData['ProfileAvatar'] ?? "");
-          getNotif(address ?? "", token ?? "");
+          final followingsState =
+              Provider.of<FollowingProvider>(context, listen: false);
+          followingsState.setFollowings(userData['following'] ?? []);
+          await getNotif(address ?? "", token ?? "");
         }
       } else {
         final avatarstate = Provider.of<AvatarProvider>(context, listen: false);
         avatarstate.setAvatar(prefs.getString('avatar') ?? "");
 
-        getNotif(address ?? "", token ?? "");
+        await getNotif(address ?? "", token ?? "");
+
+        final response = await http.get(
+          Uri.parse(
+              'https://account.cratch.io/api/users/profile/${address?.toLowerCase()}/${address?.toLowerCase()}'),
+          headers: {'Authorization': 'Bearer $token'},
+        );
+
+        final userData = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          final followingsState =
+              Provider.of<FollowingProvider>(context, listen: false);
+          followingsState.setFollowings(userData['following'] ?? []);
+        }
       }
     } catch (e) {
       print(e);
