@@ -298,7 +298,7 @@ class _LoginViewState extends State<LoginView> {
   getUri() async {
     response = await signClient.connect(requiredNamespaces: {
       'eip155': const RequiredNamespace(
-          chains: ['eip155:361'], //
+          chains: ['eip155:137'], //
           methods: ['personal_sign'], //
           events: []),
     });
