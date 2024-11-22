@@ -110,6 +110,7 @@ class _CreateStreamState extends State<CreateStream> {
       final prefs = await SharedPreferences.getInstance();
       var userId = prefs.getString('userId') ?? '';
       var token = prefs.getString('token') ?? '';
+      var wallet = prefs.getString('wallet_address' ?? '');
       var streamKey = generateUniqueId(8) +
           "-" +
           generateUniqueId(4) +
@@ -144,6 +145,7 @@ class _CreateStreamState extends State<CreateStream> {
             'Connection': 'keep-alive'
           },
           body: json.encode({
+            "userId": wallet,
             "creator": userId,
             "title": title.toString(),
             "isActive": false,
